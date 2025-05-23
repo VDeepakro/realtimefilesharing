@@ -33,7 +33,7 @@ Users can upload files from their browser, and all connected users will instantl
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/realtimefileshare.git
+git clone https://github.com/VDeepakro/realtimefileshare.git
 cd realtimefileshare
 
 
