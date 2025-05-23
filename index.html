@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Real-time File Sharing</title>
+</head>
+<body>
+  <h2>Upload File</h2>
+  <input type="text" id="username" placeholder="Enter your username" required><br><br>
+  <input type="file" id="fileInput" /><br><br>
+  <button onclick="sendFile()">Send</button>
+
+  <h3>Shared Files:</h3>
+  <ul id="fileList"></ul>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:8000/ws");
+
+    ws.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      if (data.error) alert(data.error);
+      else {
+        const li = document.createElement("li");
+        li.innerHTML = `${data.username} shared <a href="${data.file_url}" target="_blank">${data.filename}</a> at ${data.timestamp}`;
+        document.getElementById("fileList").appendChild(li);
+      }
+    };
+
+    async function sendFile() {
+      const fileInput = document.getElementById("fileInput");
+      const username = document.getElementById("username").value;
+      const file = fileInput.files[0];
+
+      if (!file || !username) {
+        alert("Please enter a username and select a file.");
+        return;
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+
+      ws.send(JSON.stringify({
+        username: username,
+        filename: file.name,
+        content_type: file.type,
+        file_data: Array.from(new Uint8Array(arrayBuffer))
+      }));
+    }
+  </script>
+</body>
+</html>
